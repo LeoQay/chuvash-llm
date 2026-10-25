@@ -28,6 +28,10 @@ LATIN_RE = re.compile(r"[A-Za-z]")
 URL_RE = re.compile(r"https?://|www\.|\.ru\b|\.com\b|@")
 
 
+def text_hash(text: str) -> bytes:
+    return hashlib.md5(text.lower().encode()).digest()
+
+
 def download():
     RAW.mkdir(parents=True, exist_ok=True)
 
@@ -129,7 +133,7 @@ def clean_doc(text: str, seen: set[bytes], stats: dict[str, int], examples: dict
         reason = keep_line_or_reason_to_drop(line)
 
         if reason is None:
-            h = hashlib.md5(line.lower().encode()).digest()
+            h = text_hash(line)
 
             if h in seen:
                 reason = "dup_line"
