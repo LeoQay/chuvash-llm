@@ -1,0 +1,18 @@
+[project]
+name = "chuvash-llm"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "datasets>=5.1.0",
+    "huggingface-hub>=2.3.0",
+    "ipykernel>=7.4.0",
+    "matplotlib>=3.11.2",
+    "nbconvert>=7.17.2",
+    "nbformat>=5.11.1",
+    "pandas>=3.1.0",
+    "pyarrow>=26.0.0",
+    "tensorboard>=2.21.0",
+    "tokenizers>=0.23.3",
+    "torch>=2.14.1",
+    "transformers>=5.20.2",
+]
