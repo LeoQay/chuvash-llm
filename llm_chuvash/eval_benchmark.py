@@ -11,7 +11,7 @@ from common import Batches, evaluate
 
 # 32 факта, у каждого 3 перефразировки и 4 варианта ответа
 # Правильный вариант всегда первый
-ITEMS = json.loads((Path(__file__).parent / "benchmark_chv.json").read_text())
+ITEMS = json.loads((Path(__file__).parent / "data" / "benchmark_chv.json").read_text())
 PROMPTS = [p for it in ITEMS for p in it["prompts"]]
 OPTIONS = [it["options"] for it in ITEMS for _ in it["prompts"]]
 

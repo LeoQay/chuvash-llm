@@ -19,7 +19,7 @@ LEIPZIG_URL = "https://downloads.wortschatz-leipzig.de/corpora/chv_community_201
 LOOKALIKES = str.maketrans("ăĕçÿĂĔÇŸ", "ӑӗҫӳӐӖҪӲ")
 
 CHV_LETTERS = set("ӑӗҫӳӐӖҪӲ")
-STOPWORDS = Path(__file__).parent / "stopwords"
+STOPWORDS = Path(__file__).parent / "data" / "stopwords"
 CHV_STOP = set((STOPWORDS / "chv.txt").read_text().split())
 RU_STOP = set((STOPWORDS / "ru.txt").read_text().split())
 CUT_SECTIONS = {"асӑрхавсем", "вуламалли", "каҫӑсем", "ҫавӑн пекех пӑхӑр", "литература", "ссылки"}
