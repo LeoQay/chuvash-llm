@@ -73,7 +73,6 @@ def parse_args() -> argparse.Namespace:
 
     p.add_argument("checkpoints", nargs="+")
     p.add_argument("--out", default="results/benchmark.json")
-    p.add_argument("--controls", type=int, default=5, help="random-weight controls of the first checkpoint")
 
     return p.parse_args()
 
@@ -91,28 +90,21 @@ def main():
         tokenizer = PreTrainedTokenizerFast.from_pretrained(ckpt)
         model = AutoModelForCausalLM.from_pretrained(ckpt).to(device)
 
-        models = {Path(ckpt).name: model}
+        name = Path(ckpt).name
 
-        # Та же архитектура со случайными весами: сколько набирает модель без обучения
-        if not results:
-            for seed in range(args.controls):
-                torch.manual_seed(seed)
-                models[f"untrained_seed{seed}"] = AutoModelForCausalLM.from_config(model.config).to(device)
+        val = Batches(f"data/tok{len(tokenizer) // 1000 * 1000}/val.bin", 512, 32, device)
+        val_loss, bpc = evaluate(model, val, val_chars, autocast)
 
-        for name, m in models.items():
-            val = Batches(f"data/tok{len(tokenizer) // 1000 * 1000}/val.bin", 512, 32, device)
-            val_loss, bpc = evaluate(m, val, val_chars, autocast)
+        bench = run_benchmark(model, tokenizer, device)
 
-            bench = run_benchmark(m, tokenizer, device)
+        results[name] = {
+            "val_loss": round(val_loss, 4),
+            "ppl": round(math.exp(val_loss), 1),
+            "bpc": round(bpc, 4),
+            **bench,
+        }
 
-            results[name] = {
-                "val_loss": round(val_loss, 4),
-                "ppl": round(math.exp(val_loss), 1),
-                "bpc": round(bpc, 4),
-                **bench,
-            }
-
-            print(f"{name:28s} ppl {math.exp(val_loss):9.1f}  bpc {bpc:.3f}  {bench['summary']}")
+        print(f"{name:28s} ppl {math.exp(val_loss):9.1f}  bpc {bpc:.3f}  {bench['summary']}")
 
     Path(args.out).parent.mkdir(exist_ok=True)
     Path(args.out).write_text(json.dumps(results, ensure_ascii=False, indent=1))
