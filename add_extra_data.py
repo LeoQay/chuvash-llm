@@ -173,13 +173,13 @@ def main():
 
     print(json.dumps(stats["total_v2"], indent=1))
 
-    tok = PreTrainedTokenizerFast.from_pretrained("tokenizers/bpe16000")
+    tokenizer = PreTrainedTokenizerFast.from_pretrained("tokenizers/bpe16000")
 
     out = DATA / "tok16000_v2"
     out.mkdir(exist_ok=True)
 
-    ids = tok(list(v2.text[v2.split == "train"]))["input_ids"]
-    flat = np.fromiter((t for doc in ids for t in (*doc, tok.eos_token_id)), dtype=np.uint16)
+    ids = tokenizer(list(v2.text[v2.split == "train"]))["input_ids"]
+    flat = np.fromiter((t for doc in ids for t in (*doc, tokenizer.eos_token_id)), dtype=np.uint16)
     flat.tofile(out / "train.bin")
 
     shutil.copy(DATA / "tok16000" / "val.bin", out / "val.bin")
